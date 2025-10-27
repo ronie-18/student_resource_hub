@@ -1,0 +1,81 @@
+{% extends 'base/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Profile - Student Resource Hub{% endblock %}
+
+{% block content %}
+<div class="profile-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-3 text-center">
+                <img src="{{ user.profile_image.url }}" alt="{{ user.username }}" class="profile-image">
+            </div>
+            <div class="col-md-9">
+                <h2>{{ user.username }}</h2>
+                <p>{{ user.bio }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-4">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Update Profile</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <button type="submit" class="btn btn-primary w-100 mt-3">Update</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5>My Uploaded Resources</h5>
+                </div>
+                <div class="card-body">
+                    {% if user_resources %}
+                        <div class="row">
+                            {% for resource in user_resources %}
+                                <div class="col-md-6 mb-3">
+                                    <div class="card h-100">
+                                        {% if resource.thumbnail %}
+                                            <img src="{{ resource.thumbnail.url }}" class="card-img-top" alt="{{ resource.title }}">
+                                        {% else %}
+                                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 140px;">
+                                                <i class="fas fa-file-alt fa-3x text-secondary"></i>
+                                            </div>
+                                        {% endif %}
+                                        <div class="card-body">
+                                            <h5 class="card-title">{{ resource.title }}</h5>
+                                            <p class="card-text small">{{ resource.description|truncatechars:50 }}</p>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span class="badge category-badge">{{ resource.category.name }}</span>
+                                                <small class="text-muted">{{ resource.downloads }} downloads</small>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer bg-white">
+                                            <a href="{% url 'resource_detail' resource.pk %}" class="btn btn-sm btn-outline-primary">View</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-center py-3">You haven't uploaded any resources yet.</p>
+                        <div class="text-center">
+                            <a href="{% url 'upload_resource' %}" class="btn btn-primary">Upload Your First Resource</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

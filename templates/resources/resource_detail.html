@@ -1,0 +1,83 @@
+{% extends 'base/base.html' %}
+
+{% block title %}{{ resource.title }} - Student Resource Hub{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h1 class="card-title">{{ resource.title }}</h1>
+                    <div class="d-flex mb-3">
+                        <span class="badge category-badge me-2">{{ resource.category.name }}</span>
+                        <span class="text-muted">{{ resource.downloads }} downloads</span>
+                    </div>
+                    <p class="card-text">{{ resource.description }}</p>
+                    
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <div>
+                            <small class="text-muted">Uploaded by {{ resource.uploader.username }}</small><br>
+                            <small class="text-muted">{{ resource.upload_date }}</small>
+                        </div>
+                        <a href="{% url 'download_resource' resource.pk %}" class="btn btn-primary">
+                            <i class="fas fa-download me-2"></i>Download
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            {% if resource.thumbnail %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Preview</h5>
+                </div>
+                <div class="card-body text-center">
+                    <img src="{{ resource.thumbnail.url }}" alt="{{ resource.title }}" class="img-fluid">
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Uploader</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <img src="{{ resource.uploader.profile_image.url }}" alt="{{ resource.uploader.username }}" class="rounded-circle me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                        <div>
+                            <h6 class="mb-0">{{ resource.uploader.username }}</h6>
+                            <small class="text-muted">Member since {{ resource.uploader.date_joined|date:"M Y" }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h5>Related Resources</h5>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        {% for related in related_resources %}
+                        <li class="list-group-item">
+                            <a href="{% url 'resource_detail' related.pk %}" class="text-decoration-none">
+                                {{ related.title }}
+                            </a>
+                            <div class="d-flex justify-content-between align-items-center mt-1">
+                                <span class="badge category-badge">{{ related.category.name }}</span>
+                                <small class="text-muted">{{ related.downloads }} downloads</small>
+                            </div>
+                        </li>
+                        {% empty %}
+                        <li class="list-group-item">No related resources found</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
